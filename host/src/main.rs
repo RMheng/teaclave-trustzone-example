@@ -20,21 +20,20 @@ use optee_teec::{ParamNone, ParamValue, ParamTmpRef};
 use proto::{UUID, Command};
 
 fn hello_world(session: &mut Session) -> optee_teec::Result<()> {
-    let nums1 = [1, 2, 3, 4, 5]; 
-    let nums2 = [4, 5, 6, 7, 8];
+    let nums1:[u8; 5] = [1, 2, 3, 4, 5]; 
+    let nums2:[u8; 5] = [4, 5, 6, 7, 8];
     let mut resu = [0; 5];
     let p1 = ParamTmpRef::new_input(&nums1);
     let p2 = ParamTmpRef::new_input(&nums2);
     let mut p3 = ParamTmpRef::new_output(&mut resu);
-    //let p0 = ParamValue::new(29, 0, ParamType::ValueInout);
-    //let mut operation = Operation::new(0, p0, ParamNone, ParamNone, ParamNone);
+    
     let mut operation = Operation::new(0, p1, p2, p3, ParamNone);
     
     session.invoke_command(Command::Intersection as u32, &mut operation)?;
     println!("intersection invoke");
-
-    session.invoke_command(Command::Union as u32, &mut operation)?;
-    println!("union invoke");
+    println!("resu = {:?}", &resu);
+    //session.invoke_command(Command::Union as u32, &mut operation)?;
+    //println!("union invoke");
     //println!("dec value is {:?}", operation.parameters().0.a());
     Ok(())
 }

@@ -50,33 +50,36 @@ fn destroy() {
 fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
     trace_println!("[+] TA invoke command");
     //let mut values = unsafe { params.0.as_value().unwrap() };
-    let mut nums1 = unsafe { params.0.as_memref().unwrap().raw() };
-    let mut nums2 = unsafe { params.1.as_memref().unwrap().raw() };
+    let nums1 = unsafe { params.0.as_memref().unwrap().raw() };
+    let nums2 = unsafe { params.1.as_memref().unwrap().raw() };
     let mut vec = unsafe { params.2.as_memref().unwrap().raw() };
     match Command::from(cmd_id) {
         Command::Intersection => {
-            let mut set: HashSet<usize> = HashSet::new();
-            let mut vec: Vec<usize> = Vec::new();
+            let mut set: HashSet<u8> = HashSet::new();
             let nums1_size = unsafe { (*nums1).size };
             let nums2_size = unsafe { (*nums2).size };
+            let mut vec_count = 0;
             for i in 0..nums1_size {
                 let mut val_nums1 = 0;
                 unsafe {
-                    val_nums1 = *((*nums1).buffer as *mut usize).offset(i as isize);
+                    val_nums1 = *((*nums1).buffer as *mut u8).offset(i as isize);
                 };
                 set.insert(val_nums1);
             }
+            
             for i in 0..nums2_size {
                 let mut val_nums2 = 0;
                 unsafe {
-                    val_nums2 = *((*nums2).buffer as *mut usize).offset(i as isize);
+                    val_nums2 = *((*nums2).buffer as *mut u8).offset(i as isize);
                 };
+                
                 if set.contains(&val_nums2) {
-                    vec.push(val_nums2);
+                    unsafe { *((*vec).buffer as *mut u8).offset(vec_count as isize) = val_nums2; }
+                    vec_count += 1;
                     set.remove(&val_nums2);
                 }
             }
-            
+            unsafe{ (*vec).size = vec_count; }
             Ok(())
         }
         Command::Union => {
