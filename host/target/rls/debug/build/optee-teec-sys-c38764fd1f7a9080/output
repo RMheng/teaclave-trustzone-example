@@ -1,0 +1,2 @@
+cargo:rustc-link-search=../../optee/optee_client/out/export/usr/lib
+cargo:rustc-link-lib=static=teec

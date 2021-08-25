@@ -22,6 +22,7 @@ use optee_utee::{
 };
 use optee_utee::{Error, ErrorKind, Parameters, Result};
 use proto::Command;
+use std::collections::HashSet;
 
 #[ta_create]
 fn create() -> Result<()> {
@@ -48,14 +49,39 @@ fn destroy() {
 #[ta_invoke_command]
 fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
     trace_println!("[+] TA invoke command");
-    let mut values = unsafe { params.0.as_value().unwrap() };
+    //let mut values = unsafe { params.0.as_value().unwrap() };
+    let mut nums1 = unsafe { params.0.as_memref().unwrap().raw() };
+    let mut nums2 = unsafe { params.1.as_memref().unwrap().raw() };
+    let mut vec = unsafe { params.2.as_memref().unwrap().raw() };
     match Command::from(cmd_id) {
-        Command::IncValue => {
-            values.set_a(values.a() + 100);
+        Command::Intersection => {
+            let mut set: HashSet<usize> = HashSet::new();
+            let mut vec: Vec<usize> = Vec::new();
+            let nums1_size = unsafe { (*nums1).size };
+            let nums2_size = unsafe { (*nums2).size };
+            for i in 0..nums1_size {
+                let mut val_nums1 = 0;
+                unsafe {
+                    val_nums1 = *((*nums1).buffer as *mut usize).offset(i as isize);
+                };
+                set.insert(val_nums1);
+            }
+            for i in 0..nums2_size {
+                let mut val_nums2 = 0;
+                unsafe {
+                    val_nums2 = *((*nums2).buffer as *mut usize).offset(i as isize);
+                };
+                if set.contains(&val_nums2) {
+                    vec.push(val_nums2);
+                    set.remove(&val_nums2);
+                }
+            }
+            
             Ok(())
         }
-        Command::DecValue => {
-            values.set_a(values.a() - 100);
+        Command::Union => {
+            //values.set_a(values.a() - 100);
+            //trace_println!("Union function");
             Ok(())
         }
         _ => Err(Error::new(ErrorKind::BadParameters)),

@@ -16,20 +16,26 @@
 // under the License.
 
 use optee_teec::{Context, Operation, ParamType, Session, Uuid};
-use optee_teec::{ParamNone, ParamValue};
+use optee_teec::{ParamNone, ParamValue, ParamTmpRef};
 use proto::{UUID, Command};
 
 fn hello_world(session: &mut Session) -> optee_teec::Result<()> {
-    let p0 = ParamValue::new(29, 0, ParamType::ValueInout);
-    let mut operation = Operation::new(0, p0, ParamNone, ParamNone, ParamNone);
+    let nums1 = [1, 2, 3, 4, 5]; 
+    let nums2 = [4, 5, 6, 7, 8];
+    let mut resu = [0; 5];
+    let p1 = ParamTmpRef::new_input(&nums1);
+    let p2 = ParamTmpRef::new_input(&nums2);
+    let mut p3 = ParamTmpRef::new_output(&mut resu);
+    //let p0 = ParamValue::new(29, 0, ParamType::ValueInout);
+    //let mut operation = Operation::new(0, p0, ParamNone, ParamNone, ParamNone);
+    let mut operation = Operation::new(0, p1, p2, p3, ParamNone);
+    
+    session.invoke_command(Command::Intersection as u32, &mut operation)?;
+    println!("intersection invoke");
 
-    println!("original value is {:?}", operation.parameters().0.a());
-
-    session.invoke_command(Command::IncValue as u32, &mut operation)?;
-    println!("inc value is {:?}", operation.parameters().0.a());
-
-    session.invoke_command(Command::DecValue as u32, &mut operation)?;
-    println!("dec value is {:?}", operation.parameters().0.a());
+    session.invoke_command(Command::Union as u32, &mut operation)?;
+    println!("union invoke");
+    //println!("dec value is {:?}", operation.parameters().0.a());
     Ok(())
 }
 

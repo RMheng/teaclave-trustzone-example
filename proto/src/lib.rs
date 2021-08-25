@@ -16,8 +16,8 @@
 // under the License.
 
 pub enum Command {
-    IncValue,
-    DecValue,
+    Intersection,
+    Union,
     Unknown,
 }
 
@@ -25,8 +25,8 @@ impl From<u32> for Command {
     #[inline]
     fn from(value: u32) -> Command {
         match value {
-            0 => Command::IncValue,
-            1 => Command::DecValue,
+            0 => Command::Intersection,
+            1 => Command::Union,
             _ => Command::Unknown,
         }
     }
