@@ -1,4 +1,0 @@
-cargo:rustc-link-search=/home/ruanwenwen/rww/incubator-teaclave-trustzone-sdk/examples/hello_world/ta/target/aarch64-unknown-optee-trustzone/release/build/ta-796582edb1e200ca/out
-cargo:rerun-if-changed=ta.lds
-cargo:rustc-link-search=/home/ruanwenwen/rww/incubator-teaclave-trustzone-sdk/optee/optee_os/out/arm/export-ta_arm64/lib
-cargo:rustc-link-lib=static=utee

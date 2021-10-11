@@ -1,3 +1,0 @@
-cargo:rustc-link-search=../../optee/optee_os/out/arm/export-ta_arm64/lib
-cargo:rustc-link-lib=static=utee
-cargo:rustc-link-lib=static=mbedtls
