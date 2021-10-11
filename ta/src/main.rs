@@ -92,6 +92,7 @@ fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
                     val_nums1 = *((*nums1).buffer as *mut u8).offset(i as isize);
                     *((*vec_union).buffer as *mut u8).offset(vec_count as isize) = val_nums1;
                 }
+                vec_count += 1;
                 set.insert(val_nums1);
             }
 

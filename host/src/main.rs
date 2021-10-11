@@ -22,23 +22,21 @@ use proto::{UUID, Command};
 fn data_compute(session: &mut Session) -> optee_teec::Result<()> {
     let nums1:[u8; 5] = [1, 2, 3, 4, 5]; 
     let nums2:[u8; 5] = [4, 5, 6, 7, 8];
-    //let mut vec_intersection = [0; 5];
-    //let mut vec_union = [0; 10];
-    let mut resu = [0; 10];
+    let mut vec_intersection = [0; 5];
+    let mut vec_union = [0; 10];
     let p1 = ParamTmpRef::new_input(&nums1);
     let p2 = ParamTmpRef::new_input(&nums2);
-    let p3 = ParamTmpRef::new_output(&mut resu);
-    //let p3 = ParamTmpRef::new_output(&mut vec_intersection);
-    //let p4 = ParamTmpRef::new_output(&mut vec_union);
-    let mut operation = Operation::new(0, p1, p2, p3, ParamNone);
+    let p3 = ParamTmpRef::new_output(&mut vec_intersection);
+    let p4 = ParamTmpRef::new_output(&mut vec_union);
+    let mut operation = Operation::new(0, p1, p2, p3, p4);
 
-    println!("intersection invoke");
-    session.invoke_command(Command::Intersection as u32, &mut operation)?;
-    //println!("Intersection resu = {:?}", &resu);
+    //println!("intersection invoke");
+    //session.invoke_command(Command::Intersection as u32, &mut operation)?;
+    //println!("Intersection resu = {:?}", &vec_intersection);
     
     println!("union invoke");
     session.invoke_command(Command::Union as u32, &mut operation)?;
-    //println!("union resu =  {:?}", &resu);
+    println!("union resu =  {:?}", &vec_union);
     Ok(())
 }
 
