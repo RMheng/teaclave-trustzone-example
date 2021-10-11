@@ -22,8 +22,8 @@ use proto::{UUID, Command};
 fn data_compute(session: &mut Session) -> optee_teec::Result<()> {
     let nums1:[u8; 5] = [1, 2, 3, 4, 5]; 
     let nums2:[u8; 5] = [4, 5, 6, 7, 8];
-    let mut vec_intersection = [0; 5];
-    let mut vec_union = [0; 10];
+    let mut vec_intersection = vec![0; 5];
+    let mut vec_union = vec![0; 10];
     let p1 = ParamTmpRef::new_input(&nums1);
     let p2 = ParamTmpRef::new_input(&nums2);
     let p3 = ParamTmpRef::new_output(&mut vec_intersection);

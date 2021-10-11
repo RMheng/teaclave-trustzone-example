@@ -1,0 +1,2 @@
+cargo:rustc-link-search=/incubator-teaclave-trustzone-sdk/optee/optee_client/out/libteec
+cargo:rustc-link-lib=dylib=teec
