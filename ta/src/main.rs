@@ -49,11 +49,10 @@ fn destroy() {
 #[ta_invoke_command]
 fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
     trace_println!("[+] TA invoke command");
-    //let mut values = unsafe { params.0.as_value().unwrap() };
     let nums1 = unsafe { params.0.as_memref().unwrap().raw() };
     let nums2 = unsafe { params.1.as_memref().unwrap().raw() };
-    let mut vec_intersection = unsafe { params.2.as_memref().unwrap().raw() };
-    let mut vec_union = unsafe { params.3.as_memref().unwrap().raw() };
+    let mut vec_resu = unsafe { params.2.as_memref().unwrap().raw() };
+    
     let nums1_size = unsafe { (*nums1).size };
     let nums2_size = unsafe { (*nums2).size };
     match Command::from(cmd_id) {
@@ -75,12 +74,12 @@ fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
                 };
                 
                 if set.contains(&val_nums2) {
-                    unsafe { *((*vec_intersection).buffer as *mut u8).offset(vec_count as isize) = val_nums2; }
+                    unsafe { *((*vec_resu).buffer as *mut u8).offset(vec_count as isize) = val_nums2; }
                     vec_count += 1;
                     set.remove(&val_nums2);
                 }
             }
-            unsafe{ (*vec_intersection).size = vec_count; }
+            unsafe{ (*vec_resu).size = vec_count; }
             Ok(())
         }
         Command::Union => {
@@ -90,7 +89,7 @@ fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
                 let mut val_nums1 = 0;
                 unsafe {
                     val_nums1 = *((*nums1).buffer as *mut u8).offset(i as isize);
-                    *((*vec_union).buffer as *mut u8).offset(vec_count as isize) = val_nums1;
+                    *((*vec_resu).buffer as *mut u8).offset(vec_count as isize) = val_nums1;
                 }
                 vec_count += 1;
                 set.insert(val_nums1);
@@ -103,12 +102,12 @@ fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
                 };
 
                 if !set.contains(&val_nums2) {
-                    unsafe { *((*vec_union).buffer as *mut u8).offset(vec_count as isize) = val_nums2; }
+                    unsafe { *((*vec_resu).buffer as *mut u8).offset(vec_count as isize) = val_nums2; }
                     vec_count += 1;
                     set.insert(val_nums2);
                 }
             }
-            unsafe{ (*vec_union).size = vec_count; }
+            unsafe{ (*vec_resu).size = vec_count; }
             Ok(())
         }
         _ => Err(Error::new(ErrorKind::BadParameters)),
